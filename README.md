@@ -41,7 +41,8 @@
 - **多IP地址智能拆分**：华为云一个A记录的多个IP自动拆分为多个DNSPOD记录
 
 ### 🛠️ 技术特性
-- ✅ 支持所有常见DNS记录类型（A、AAAA、CNAME、MX、TXT、NS、SRV、PTR）
+- ✅ 支持常见DNS记录类型（A、AAAA、CNAME、MX、TXT、SRV、PTR）
+- ⚠️ **自动跳过NS记录**：DNSPOD的NS记录由服务商管理，无需导入
 - ✅ 智能识别中英文列名，兼容不同的华为云导出格式
 - ✅ 生成标准的DNSPOD导入模板
 - ✅ 支持Excel (.xlsx, .xls) 和CSV格式
@@ -107,6 +108,7 @@ python dns_converter.py --help
 ```csv
 类型,主机记录,记录值,TTL,备注,MX
 A,www.example.com.,8.8.8.8\n1.1.1.1,600,Web服务器,
+NS,example.com.,ns1.huaweicloud-dns.com,600,华为云NS,
 TXT,example.com.,"v=spf1 include:_spf.example.com ~all",600,SPF记录,
 MX,example.com.,mail.example.com,600,邮件交换,10
 ```
@@ -119,6 +121,8 @@ A,www,Default,1.1.1.1,-,600,Web服务器
 TXT,@,Default,v=spf1 include:_spf.example.com ~all,-,600,SPF记录
 MX,@,Default,mail.example.com,10,600,邮件交换
 ```
+
+> 📝 **注意**：NS记录已自动跳过，因为DNSPOD的NS记录由服务商自动管理。
 
 ### 命令行用法
 
@@ -160,7 +164,7 @@ python dns_converter.py 华为云DNS文件.xlsx -o 我的DNSPOD模板.xlsx
 ## ❓ 常见问题
 
 ### Q: 支持哪些DNS记录类型？
-A: 支持所有常见类型：A、AAAA、CNAME、MX、TXT、NS、SRV、PTR等。
+A: 支持常见类型：A、AAAA、CNAME、MX、TXT、SRV、PTR等。**NS记录会被自动跳过**，因为DNSPOD的NS记录由服务商管理。
 
 ### Q: 华为云文件格式不识别怎么办？
 A: 工具支持中英文列名，如果仍有问题，请检查：
@@ -170,6 +174,9 @@ A: 工具支持中英文列名，如果仍有问题，请检查：
 
 ### Q: 转换后的文件可以直接导入DNSPOD吗？
 A: 是的！转换后的文件完全符合DNSPOD导入格式，可以直接使用。
+
+### Q: 为什么NS记录没有被转换？
+A: 这是正常的！DNSPOD的NS记录由服务商自动管理，不需要手动导入。工具会自动跳过所有NS记录并在日志中提示。
 
 ### Q: 如何处理转换错误？
 A: 工具会显示详细的错误信息和日志，请根据提示检查源文件格式。

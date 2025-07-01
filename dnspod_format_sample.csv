@@ -1,11 +1,8 @@
 ﻿Type,Host,Split Zone,Value,MX,TTL,Remarks
-A,www,Default,8.8.8.8,,600,
-A,www,Default,1.1.1.1,,600,
-A,www,Default,9.9.9.9,,600,
-A,@,Default,8.8.8.8,,600,
-CNAME,mail,Default,mail.example.com,,300,
-MX,@,Default,mail.example.com,10,600,
-TXT,@,Default,v=spf1 include:_spf.example.com ~all,,600,
-A,ftp,Default,192.168.1.100,,300,
-A,ftp,Default,192.168.1.101,,300,
-CNAME,blog,Default,www.example.com,,600,
+A,www,Default,8.8.8.8,-,600,Web服务器
+A,www,Default,1.1.1.1,-,600,Web服务器
+A,@,Default,8.8.8.8,-,600,根域名
+TXT,_acme-challenge,Default,295f9c7a-c772-4def-878f-a607a80095b5,-,600,ACME验证
+TXT,@,Default,v=spf1 include:_spf.example.com ~all,-,600,SPF记录
+CNAME,mail,Default,mail.provider.com,-,300,邮件服务
+MX,@,Default,mail.example.com,10,600,邮件交换

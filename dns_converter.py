@@ -193,6 +193,11 @@ class DNSConverter:
         if not record_type or pd.isna(record_type) or record_type == 'NAN':
             return converted_records
 
+        # 跳过NS记录（DNSPOD不需要导入NS记录，由服务商自动管理）
+        if record_type == 'NS':
+            print(f"跳过NS记录: {host} -> {value} (DNSPOD不需要导入NS记录)")
+            return converted_records
+
         # 清理主机记录，移除域名部分
         host = self.clean_host_record(host)
 
