@@ -67,7 +67,7 @@
 
 #### 方法2: 克隆源码
 ```bash
-git clone https://github.com/your-username/huawei-dns-to-dnspod.git
+git clone https://github.com/carryh/huawei-dns-to-dnspod.git
 cd huawei-dns-to-dnspod
 pip install -r requirements.txt
 ```
@@ -180,7 +180,7 @@ A: 工具会显示详细的错误信息和日志，请根据提示检查源文�
 
 ### 开发环境设置
 ```bash
-git clone https://github.com/your-username/huawei-dns-to-dnspod.git
+git clone https://github.com/carryh/huawei-dns-to-dnspod.git
 cd huawei-dns-to-dnspod
 pip install -r requirements.txt
 ```
