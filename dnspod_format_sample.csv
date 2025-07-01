@@ -1,0 +1,11 @@
+﻿Type,Host,Split Zone,Value,MX,TTL,Remarks
+A,www,Default,8.8.8.8,,600,
+A,www,Default,1.1.1.1,,600,
+A,www,Default,9.9.9.9,,600,
+A,@,Default,8.8.8.8,,600,
+CNAME,mail,Default,mail.example.com,,300,
+MX,@,Default,mail.example.com,10,600,
+TXT,@,Default,v=spf1 include:_spf.example.com ~all,,600,
+A,ftp,Default,192.168.1.100,,300,
+A,ftp,Default,192.168.1.101,,300,
+CNAME,blog,Default,www.example.com,,600,
