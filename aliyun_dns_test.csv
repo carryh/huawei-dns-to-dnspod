@@ -1,0 +1,13 @@
+记录类型,主机记录,解析线路,记录值,MX优先级,TTL值,状态(启用/暂停)
+A,www,默认,1.1.1.1,,600,启用
+A,@,默认,2.2.2.2,,600,启用
+CNAME,mail,默认,www.aliyun.com,,600,启用
+MX,@,默认,mx1.qiye.aliyun.com,5,600,启用
+MX,@,默认,mx2.qiye.aliyun.com,10,600,启用
+TXT,@,默认,v=spf1 include=spf1.staff.mail.aliyun.com ~all,,600,启用
+TXT,_dmarc,默认,v=DMARC1; p=none; rua=mailto:dmarc@example.com,,600,启用
+AAAA,www,默认,2001:db8::1,,600,启用
+NS,@,默认,ns1.aliyun.com,,600,启用
+NS,@,默认,ns2.aliyun.com,,600,启用
+SRV,_sip._tcp,默认,10 5 5060 sip.example.com,,600,启用
+PTR,1,默认,www.example.com,,600,启用

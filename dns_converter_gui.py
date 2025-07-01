@@ -15,7 +15,7 @@
 
 使用方法：
 1. 运行程序：python dns_converter_gui.py
-2. 选择华为云DNS Excel文件
+2. 选择华为云或阿里云DNS Excel文件
 3. 点击"开始转换"按钮
 4. 等待转换完成
 
@@ -34,7 +34,7 @@ from dns_converter import DNSConverter
 class DNSConverterGUI:
     def __init__(self, root):
         self.root = root
-        self.root.title("华为云DNS转DNSPOD工具")
+        self.root.title("华为云/阿里云DNS转DNSPOD工具")
         self.root.geometry("600x500")
         self.root.resizable(True, True)
         
@@ -56,12 +56,12 @@ class DNSConverterGUI:
         main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
         # 标题
-        title_label = ttk.Label(main_frame, text="华为云DNS转DNSPOD工具", 
+        title_label = ttk.Label(main_frame, text="华为云/阿里云DNS转DNSPOD工具",
                                font=("Arial", 16, "bold"))
         title_label.grid(row=0, column=0, columnspan=3, pady=(0, 20))
         
         # 输入文件选择
-        ttk.Label(main_frame, text="华为云DNS文件:").grid(row=1, column=0, sticky=tk.W, pady=5)
+        ttk.Label(main_frame, text="DNS文件:").grid(row=1, column=0, sticky=tk.W, pady=5)
         
         self.input_file_var = tk.StringVar()
         input_entry = ttk.Entry(main_frame, textvariable=self.input_file_var, width=50)
@@ -98,7 +98,7 @@ class DNSConverterGUI:
         self.progress_bar.grid(row=4, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=10)
         
         # 状态标签
-        self.status_var = tk.StringVar(value="请选择华为云DNS文件")
+        self.status_var = tk.StringVar(value="请选择DNS文件（支持华为云和阿里云格式）")
         status_label = ttk.Label(main_frame, textvariable=self.status_var)
         status_label.grid(row=5, column=0, columnspan=3, pady=5)
         
@@ -125,7 +125,7 @@ class DNSConverterGUI:
     def select_input_file(self):
         """选择输入文件"""
         file_path = filedialog.askopenfilename(
-            title="选择华为云DNS文件",
+            title="选择DNS文件（华为云或阿里云格式）",
             filetypes=[
                 ("Excel文件", "*.xlsx *.xls"),
                 ("CSV文件", "*.csv"),
@@ -168,7 +168,7 @@ class DNSConverterGUI:
         self.input_file = ""
         self.output_file = ""
         self.log_text.delete(1.0, tk.END)
-        self.status_var.set("请选择华为云DNS文件")
+        self.status_var.set("请选择DNS文件（支持华为云和阿里云格式）")
     
     def log_message(self, message):
         """添加日志消息"""
@@ -179,7 +179,7 @@ class DNSConverterGUI:
     def start_conversion(self):
         """开始转换（在新线程中执行）"""
         if not self.input_file:
-            messagebox.showerror("错误", "请先选择华为云DNS文件")
+            messagebox.showerror("错误", "请先选择DNS文件")
             return
         
         if not self.output_file:
@@ -204,14 +204,14 @@ class DNSConverterGUI:
         try:
             self.log_message("开始转换DNS记录...")
             
-            # 读取华为云DNS文件
+            # 读取DNS文件（自动检测华为云或阿里云格式）
             self.log_message(f"读取文件: {self.input_file}")
-            huawei_df = self.converter.read_huawei_dns(self.input_file)
-            self.log_message(f"成功读取 {len(huawei_df)} 条记录")
+            dns_df = self.converter.read_dns_file(self.input_file)
+            self.log_message(f"成功读取 {len(dns_df)} 条记录")
             
             # 转换为DNSPOD格式
             self.log_message("转换为DNSPOD格式...")
-            dnspod_df = self.converter.convert_dns_records(huawei_df)
+            dnspod_df = self.converter.convert_dns_records(dns_df)
             self.log_message(f"转换完成，共 {len(dnspod_df)} 条DNSPOD记录")
             
             # 保存DNSPOD模板

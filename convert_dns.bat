@@ -1,7 +1,7 @@
 @echo off
 chcp 65001 >nul
 echo ========================================
-echo 华为云DNS转DNSPOD工具
+echo 华为云/阿里云DNS转DNSPOD工具
 echo ========================================
 echo.
 
@@ -31,9 +31,9 @@ echo.
 
 REM 如果没有提供参数，提示用户输入文件路径
 if "%~1"=="" (
-    echo 请将华为云DNS Excel文件拖拽到此批处理文件上，或者手动输入文件路径
+    echo 请将华为云或阿里云DNS Excel文件拖拽到此批处理文件上，或者手动输入文件路径
     echo.
-    set /p input_file="请输入华为云DNS文件路径: "
+    set /p input_file="请输入DNS文件路径: "
 ) else (
     set input_file=%~1
 )

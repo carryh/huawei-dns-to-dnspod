@@ -53,8 +53,8 @@ class DNSConverter:
             'Remarks'      # G列：备注
         ]
     
-    def read_huawei_dns(self, file_path: str) -> pd.DataFrame:
-        """读取华为云DNS Excel文件"""
+    def read_dns_file(self, file_path: str) -> pd.DataFrame:
+        """读取DNS记录文件（支持华为云和阿里云格式）"""
         try:
             # 尝试读取Excel文件，支持多种格式
             if file_path.endswith('.csv'):
@@ -62,38 +62,61 @@ class DNSConverter:
             else:
                 df = pd.read_excel(file_path)
 
-            print(f"成功读取华为云DNS文件: {file_path}")
+            print(f"成功读取DNS文件: {file_path}")
             print(f"共读取到 {len(df)} 条记录")
 
             # 显示列名以便调试
             print(f"检测到的列名: {list(df.columns)}")
+
+            # 检测云服务商类型
+            cloud_provider = self.detect_cloud_provider(df)
+            print(f"检测到云服务商: {cloud_provider}")
 
             # 标准化列名
             df = self.normalize_column_names(df)
 
             return df
         except Exception as e:
-            print(f"读取华为云DNS文件失败: {e}")
+            print(f"读取DNS文件失败: {e}")
             sys.exit(1)
+
+    def detect_cloud_provider(self, df: pd.DataFrame) -> str:
+        """检测云服务商类型"""
+        columns = [col.lower() for col in df.columns]
+
+        # 阿里云特征：解析线路列
+        if any('解析线路' in col or '线路' in col for col in df.columns):
+            return "阿里云"
+
+        # 华为云特征：备注列
+        if any('备注' in col or 'remarks' in col.lower() for col in df.columns):
+            return "华为云"
+
+        # 默认按华为云处理
+        return "华为云"
 
     def normalize_column_names(self, df: pd.DataFrame) -> pd.DataFrame:
         """标准化列名，支持中英文混合"""
         column_mapping = {
-            # 记录类型
+            # 记录类型 (华为云 + 阿里云)
             '类型': 'Type', 'type': 'Type', 'Type': 'Type', '记录类型': 'Type',
-            # 主机记录
+            # 主机记录 (华为云 + 阿里云)
             '主机记录': 'Host', 'host': 'Host', 'Host': 'Host', '名称': 'Host',
             'name': 'Host', 'Name': 'Host', '域名': 'Host',
-            # 记录值
+            # 记录值 (华为云 + 阿里云)
             '记录值': 'Value', 'value': 'Value', 'Value': 'Value', '值': 'Value',
             'ip': 'Value', 'IP': 'Value', 'target': 'Value', 'Target': 'Value',
-            # TTL
+            # TTL (华为云 + 阿里云)
             'TTL': 'TTL', 'ttl': 'TTL', 'TTL值': 'TTL', 'TTL(秒)': 'TTL',
-            # MX优先级
+            # MX优先级 (华为云 + 阿里云)
             'MX': 'MX', 'mx': 'MX', '优先级': 'MX', 'priority': 'MX', 'Priority': 'MX',
-            # 备注
+            'MX优先级': 'MX',
+            # 备注 (华为云)
             '备注': 'Remarks', 'remarks': 'Remarks', 'Remarks': 'Remarks',
-            'comment': 'Remarks', 'Comment': 'Remarks', '说明': 'Remarks'
+            'comment': 'Remarks', 'Comment': 'Remarks', '说明': 'Remarks',
+            # 阿里云特有列（忽略这些列）
+            '解析线路': 'Line', '线路': 'Line',
+            '状态(启用/暂停)': 'Status', '状态': 'Status'
         }
 
         # 重命名列
@@ -309,30 +332,30 @@ class DNSConverter:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='华为云DNS记录转换为DNSPOD格式')
-    parser.add_argument('input_file', help='华为云DNS Excel文件路径')
-    parser.add_argument('-o', '--output', help='输出的DNSPOD模板文件路径', 
+    parser = argparse.ArgumentParser(description='华为云/阿里云DNS记录转换为DNSPOD格式')
+    parser.add_argument('input_file', help='DNS Excel文件路径（支持华为云和阿里云格式）')
+    parser.add_argument('-o', '--output', help='输出的DNSPOD模板文件路径',
                        default='dnspod_template.xlsx')
-    
+
     args = parser.parse_args()
-    
+
     # 检查输入文件是否存在
     if not os.path.exists(args.input_file):
         print(f"错误: 输入文件不存在: {args.input_file}")
         sys.exit(1)
-    
+
     # 创建转换器并执行转换
     converter = DNSConverter()
-    
-    # 读取华为云DNS文件
-    huawei_df = converter.read_huawei_dns(args.input_file)
-    
+
+    # 读取DNS文件（自动检测华为云或阿里云格式）
+    dns_df = converter.read_dns_file(args.input_file)
+
     # 转换为DNSPOD格式
-    dnspod_df = converter.convert_dns_records(huawei_df)
-    
+    dnspod_df = converter.convert_dns_records(dns_df)
+
     # 保存DNSPOD模板
     converter.save_dnspod_template(dnspod_df, args.output)
-    
+
     # 打印转换摘要
     converter.print_conversion_summary(dnspod_df)
 
